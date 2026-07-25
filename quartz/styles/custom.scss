@@ -13,3 +13,24 @@ html {
 .page .center .page-content {
   line-height: 1.7;
 }
+
+// The palette has no accent hue, so colour cannot signal "this is a link".
+// Quartz ships `text-decoration: none` and tints links with --secondary, which
+// here is near-black: an external link would be indistinguishable from bold
+// body text. Underline carries the affordance instead.
+//
+// Internal links are exempt: they already read as links from the --highlight
+// chip behind them, and underlining those too makes a densely linked zettel
+// look shredded.
+// Scoped to the rendered markdown body, so breadcrumbs, the explorer and the
+// footer are untouched. `.external` is the class Quartz puts on outbound links.
+.markdown-rendered a.external {
+  text-decoration: underline;
+  text-underline-offset: 2.5px;
+  text-decoration-thickness: 0.06em;
+  text-decoration-color: var(--gray);
+
+  &:hover {
+    text-decoration-color: var(--tertiary);
+  }
+}
