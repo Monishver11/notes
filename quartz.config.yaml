@@ -1,0 +1,311 @@
+# yaml-language-server: $schema=./quartz/plugins/quartz-plugins.schema.json
+#
+# Ported from the Quartz v4 config in site-v2 (quartz.config.ts +
+# quartz.layout.ts). Quartz 5 moved config to YAML and split components into
+# @quartz-community/* plugin packages, so this is a translation, not a copy.
+# Everything the v4 config set is preserved: colours, typography, KaTeX,
+# analytics, graph depth, and the sidebar layout.
+#
+# content/ is written by `zk publish` and contains only notes flagged
+# publish: true. The filtering happens before Quartz ever sees a file, which is
+# why ignorePatterns here is nearly empty.
+
+configuration:
+  pageTitle: Monishver's Notes
+  pageTitleSuffix: ""
+  enableSPA: true
+  enablePopovers: true
+  analytics:
+    provider: google
+    tagId: G-1HD0LJE1KY
+  locale: en-US
+  baseUrl: monishver11.github.io/notes
+  ignorePatterns:
+    - .obsidian
+  theme:
+    fontOrigin: googleFonts
+    cdnCaching: true
+    typography:
+      header: Source Serif 4
+      body: Source Serif 4
+      code: IBM Plex Mono
+    colors:
+      lightMode:
+        light: "#fcfcf9"
+        lightgray: "#e5e2d9"
+        gray: "#8a857c"
+        darkgray: "#5f5b54"
+        dark: "#1c1b1a"
+        secondary: "#b5533c"
+        tertiary: "#96442f"
+        highlight: rgba(181, 83, 60, 0.11)
+        textHighlight: "#f5d76e66"
+      darkMode:
+        light: "#171614"
+        lightgray: "#33312c"
+        gray: "#7c786f"
+        darkgray: "#a8a49b"
+        dark: "#e8e6e1"
+        secondary: "#d4785e"
+        tertiary: "#e08f77"
+        highlight: rgba(212, 120, 94, 0.13)
+        textHighlight: "#b3aa0288"
+
+plugins:
+  # --- transformers -------------------------------------------------------
+  - source: "@quartz-community/created-modified-date"
+    enabled: true
+    options:
+      defaultDateType: modified
+      priority:
+        - frontmatter
+        - git
+        - filesystem
+    order: 10
+  - source: "@quartz-community/syntax-highlighting"
+    enabled: true
+    options:
+      theme:
+        light: github-light
+        dark: github-dark
+      keepBackground: false
+    order: 20
+  - source: "@quartz-community/obsidian-flavored-markdown"
+    enabled: true
+    options:
+      enableInHtmlEmbed: false
+      enableCheckbox: true
+    order: 30
+  - source: "@quartz-community/github-flavored-markdown"
+    enabled: true
+    order: 40
+  - source: "@quartz-community/table-of-contents"
+    enabled: true
+    order: 50
+    layout:
+      position: right
+      priority: 30
+  - source: "@quartz-community/crawl-links"
+    enabled: true
+    options:
+      markdownLinkResolution: shortest
+    order: 60
+  - source: "@quartz-community/description"
+    enabled: true
+    order: 70
+  # Several zettels carry inline math. KaTeX, same as the v4 config.
+  - source: "@quartz-community/latex"
+    enabled: true
+    options:
+      renderEngine: katex
+    order: 80
+  # In v5 THIS plugin owns fonts, not configuration.theme.typography above.
+  # Left at its defaults it emits its own stylesheet with Obsidian's fonts and
+  # fontOrigin: local, which overrode the theme block and rendered everything
+  # in system sans. The typography block above still sets the CSS variables and
+  # the fallback chain, so both are kept in agreement deliberately.
+  - source: "@quartz-community/quartz-fonts"
+    enabled: true
+    options:
+      useThemeFonts: false
+      fontOrigin: googleFonts
+      header:
+        name: Source Serif 4
+        weights: [400, 500, 600, 700]
+      body:
+        name: Source Serif 4
+        weights: [400, 600]
+        includeItalic: true
+      code:
+        name: IBM Plex Mono
+        weights: [400, 600]
+
+  # --- filters and emitters ----------------------------------------------
+  - source: "@quartz-community/remove-draft"
+    enabled: true
+  # zk decides what publishes, by copying only flagged notes into content/.
+  # explicit-publish would be a second, competing gate.
+  - source: "@quartz-community/explicit-publish"
+    enabled: false
+  # Load-bearing: `zk publish` offers to add the old slug to a renamed note's
+  # aliases, and this is what turns that alias into a real redirect page.
+  - source: "@quartz-community/alias-redirects"
+    enabled: true
+  - source: "@quartz-community/content-index"
+    enabled: true
+    options:
+      enableSiteMap: true
+      enableRSS: true
+  - source: "@quartz-community/favicon"
+    enabled: true
+  - source: "@quartz-community/og-image"
+    enabled: true
+  - source: "@quartz-community/cname"
+    enabled: true
+  - source: "@quartz-community/content-page"
+    enabled: true
+  # Folder pages are the "sections": /notes/zettels/, /notes/reading/tech/.
+  - source: "@quartz-community/folder-page"
+    enabled: true
+  # Tag pages are what put reading and zettels on one topic side by side.
+  - source: "@quartz-community/tag-page"
+    enabled: true
+  - source: "@quartz-community/canvas-page"
+    enabled: false
+  - source: "@quartz-community/bases-page"
+    enabled: false
+  - source: "@quartz-community/encrypted-pages"
+    enabled: false
+  # This plugin PARSES the frontmatter block, it does not merely display it.
+  # Disabling it leaves `---` as literal markdown, so tags never populate and
+  # no per-tag pages get emitted. Keep it enabled; hide the rendered block with
+  # hidePropertiesView instead, since tag-list already shows tags.
+  - source: "@quartz-community/note-properties"
+    enabled: true
+    options:
+      includeAll: false
+      includedProperties:
+        - description
+        - tags
+        - aliases
+      excludedProperties: []
+      hidePropertiesView: true
+      delimiters: ---
+      language: yaml
+    order: 5
+    layout:
+      position: beforeBody
+      priority: 15
+      display: all
+
+  # --- layout: left sidebar ----------------------------------------------
+  - source: "@quartz-community/page-title"
+    enabled: true
+    layout:
+      position: left
+      priority: 10
+  - source: "@quartz-community/spacer"
+    enabled: true
+    options: {}
+    order: 25
+    layout:
+      position: left
+      priority: 25
+      display: mobile-only
+  - source: "@quartz-community/search"
+    enabled: true
+    layout:
+      position: left
+      priority: 20
+      group: toolbar
+      groupOptions:
+        grow: true
+  - source: "@quartz-community/darkmode"
+    enabled: true
+    layout:
+      position: left
+      priority: 30
+      group: toolbar
+  - source: "@quartz-community/reader-mode"
+    enabled: true
+    layout:
+      position: left
+      priority: 35
+      group: toolbar
+  - source: "@quartz-community/explorer"
+    enabled: true
+    layout:
+      position: left
+      priority: 50
+
+  # --- layout: right sidebar ---------------------------------------------
+  # depth 2, not the default 1: at depth 1 the sidebar graph looked almost
+  # empty. The full graph is behind the expand icon on the panel.
+  - source: "@quartz-community/graph"
+    enabled: true
+    options:
+      localGraph:
+        depth: 2
+        scale: 1.2
+    layout:
+      position: right
+      priority: 10
+  - source: "@quartz-community/backlinks"
+    enabled: true
+    layout:
+      position: right
+      priority: 50
+
+  # --- layout: above the body --------------------------------------------
+  - source: "@quartz-community/breadcrumbs"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 5
+      condition: not-index
+  - source: "@quartz-community/article-title"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 10
+  - source: "@quartz-community/content-meta"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 20
+  - source: "@quartz-community/tag-list"
+    enabled: true
+    layout:
+      position: beforeBody
+      priority: 30
+
+  # --- footer -------------------------------------------------------------
+  # Repointed from the dead site-v2 staging URL to the real site.
+  - source: "@quartz-community/footer"
+    enabled: true
+    options:
+      links:
+        Home: https://monishver11.github.io
+        Blog: https://monishver11.github.io/blog/
+
+  # --- off ----------------------------------------------------------------
+  - source: "@quartz-community/comments"
+    enabled: false
+  - source: "@quartz-community/citations"
+    enabled: false
+  - source: "@quartz-community/hard-line-breaks"
+    enabled: false
+  - source: "@quartz-community/ox-hugo"
+    enabled: false
+  - source: "@quartz-community/roam"
+    enabled: false
+  - source: "@quartz-community/recent-notes"
+    enabled: false
+  - source: "@quartz-community/stacked-pages"
+    enabled: false
+  - source: "@quartz-themes/core"
+    enabled: false
+
+layout:
+  groups:
+    toolbar:
+      priority: 35
+      direction: row
+      gap: 0.5rem
+  byPageType:
+    "404":
+      positions:
+        beforeBody: []
+        left: []
+        right: []
+    content: {}
+    folder:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
+    tag:
+      exclude:
+        - reader-mode
+      positions:
+        right: []
