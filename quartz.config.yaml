@@ -212,8 +212,17 @@ plugins:
       position: left
       priority: 35
       group: toolbar
+  # Open by default. Collapsed, the folder tree is the only route to a note
+  # from the home page, and it is not obvious there is anything behind it.
   - source: "@quartz-community/explorer"
     enabled: true
+    options:
+      # folderDefaultState is declared but NOT honoured by explorer 0.1.0: its
+      # render hardcodes folders to collapsed unless localStorage says otherwise.
+      # So keep saved state on, and expanding a folder once makes it stick.
+      folderDefaultState: open
+      useSavedState: true
+      folderClickBehavior: link
     layout:
       position: left
       priority: 50
@@ -261,12 +270,21 @@ plugins:
 
   # --- footer -------------------------------------------------------------
   # Repointed from the dead site-v2 staging URL to the real site.
+  # Tags is here because nothing else in the chrome links to /tags/, and the
+  # tag pages are the only place reading notes and zettels on one topic appear
+  # together.
+  # Needs an explicit layout position. Without one it is enabled but never
+  # placed, so no footer renders at all and the Tags route stays unreachable.
   - source: "@quartz-community/footer"
     enabled: true
     options:
       links:
+        Tags: https://monishver11.github.io/notes/tags/
         Home: https://monishver11.github.io
         Blog: https://monishver11.github.io/blog/
+    layout:
+      position: afterBody
+      priority: 100
 
   # --- off ----------------------------------------------------------------
   - source: "@quartz-community/comments"
