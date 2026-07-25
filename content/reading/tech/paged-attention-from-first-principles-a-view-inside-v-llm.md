@@ -12,4 +12,6 @@ clipped: 2026-07-25
 publish: true
 ---
 
+[Read the original](https://hamzaelshafie.bearblog.dev/paged-attention-from-first-principles-a-view-inside-vllm/)
+
 This blog discusses vLLM's paged attention, its need and how it helps in KV cache management, by using a paging concept of virtual memory from operating system.
