@@ -1,3 +1,15 @@
 @use "./variables.scss" as *;
 
-// put your custom CSS here!
+// Base type size. Quartz sizes everything in rem, so moving the root scales
+// body text, headings, sidebar and code together and keeps the vertical rhythm
+// intact. 16px is the browser default; 18px is about 12% larger.
+//
+// This one number resizes the whole site.
+html {
+  font-size: 18px;
+}
+
+// Long-form reading is the point here, so open the prose up slightly.
+.page .center .page-content {
+  line-height: 1.7;
+}
